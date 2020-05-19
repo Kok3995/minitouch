@@ -11,12 +11,14 @@
 #include <sys/types.h>
 #include <sys/un.h>
 #include <unistd.h>
+#include <netinet/in.h> 
 
 #include <libevdev.h>
 
 #define MAX_SUPPORTED_CONTACTS 10
 #define VERSION 1
 #define DEFAULT_SOCKET_NAME "minitouch"
+#define PORT 8080
 
 static int g_verbose = 0;
 
@@ -604,7 +606,7 @@ static int commit(internal_state_t* state)
 
 static int start_server(char* sockname)
 {
-  int fd = socket(AF_UNIX, SOCK_STREAM, 0);
+  int fd = socket(AF_INET, SOCK_STREAM, 0);
 
   if (fd < 0)
   {
@@ -612,13 +614,15 @@ static int start_server(char* sockname)
     return fd;
   }
 
-  struct sockaddr_un addr;
+  struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));
-  addr.sun_family = AF_UNIX;
-  strncpy(&addr.sun_path[1], sockname, strlen(sockname));
+  addr.sin_family = AF_INET;
+  addr.sin_addr.s_addr = INADDR_ANY;
+  addr.sin_port = htons( PORT );
+  //strncpy(&addr.sun_path[1], sockname, strlen(sockname));
 
   if (bind(fd, (struct sockaddr*) &addr,
-    sizeof(sa_family_t) + strlen(sockname) + 1) < 0)
+    sizeof(addr)) < 0)
   {
     perror("binding socket");
     close(fd);
