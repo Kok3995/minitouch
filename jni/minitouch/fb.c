@@ -2,6 +2,8 @@
 #include <errno.h>
 #include <linux/fb.h>
 #include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 #include "fb.h"
 
