@@ -6,6 +6,7 @@ LOCAL_MODULE := minitouch-common
 
 LOCAL_SRC_FILES := \
 	minitouch.c \
+	fb.c \
 
 LOCAL_STATIC_LIBRARIES := \
 	libevdev \

@@ -14,6 +14,7 @@
 #include <netinet/in.h> 
 
 #include <libevdev.h>
+#include "fb.h"
 
 #define MAX_SUPPORTED_CONTACTS 10
 #define VERSION 1
@@ -604,6 +605,32 @@ static int commit(internal_state_t* state)
   }
 }
 
+static int screenshot(FILE* output) {
+  struct fb fb;
+  int ret;
+
+  ret = get_device_fb("/dev/graphics/fb0", &fb);
+
+  if (ret) {
+    fprintf(stderr, "Failed to read framebuffer.\n");
+    return 0;
+  }
+
+  char *rgb_matrix;
+
+  ret = fb_read(&fb, rgb_matrix);
+
+  if(!rgb_matrix || ret) {
+    fprintf(stderr, "rgb_matrix: memory error.\n");
+  } else
+  {
+    //send the matrix here 
+    fwrite(rgb_matrix, sizeof(rgb_matrix), 1, output);
+  }
+
+  free(rgb_matrix);
+}
+
 static int start_server(char* sockname)
 {
   int fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -634,7 +661,7 @@ static int start_server(char* sockname)
   return fd;
 }
 
-static void parse_input(char* buffer, internal_state_t* state)
+static void parse_input(char* buffer, internal_state_t* state, FILE* output)
 {
   char* cursor;
   long int contact, x, y, pressure, wait;
@@ -674,6 +701,9 @@ static void parse_input(char* buffer, internal_state_t* state)
         fprintf(stderr, "Waiting %ld ms\n", wait);
       usleep(wait * 1000);
       break;
+    case 's':
+      screenshot(output);
+      break;
     default:
       break;
   }
@@ -699,7 +729,7 @@ static void io_handler(FILE* input, FILE* output, internal_state_t* state)
   while (fgets(read_buffer, sizeof(read_buffer), input) != NULL)
   {
     read_buffer[strcspn(read_buffer, "\r\n")] = 0;
-    parse_input(read_buffer, state);
+    parse_input(read_buffer, state, output);
   }
 }
 
@@ -970,7 +1000,7 @@ int main(int argc, char* argv[])
       exit(1);
     }
 
-    output = fdopen(dup(client_fd), "w");
+    output = fdopen(dup(client_fd), "wb");
     if (output == NULL)
     {
       fprintf(stderr, "%s: fdopen(client_fd,'w')\n", strerror(errno));
