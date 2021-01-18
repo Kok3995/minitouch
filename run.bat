@@ -1,1 +1,2 @@
-ndk-build NDK_DEBUG=1 && adb push libs/armeabi-v7a/minitouch /data/local/tmp && adb shell chmod 777 /data/local/tmp/minitouch && adb push libs/armeabi-v7a/gdbserver /data/local/tmp && adb shell chmod 777 /data/local/tmp/gdbserver && adb shell /data/local/tmp/gdbserver :5039 /data/local/tmp/minitouch
+adb shell /data/local/tmp/minitouch
+pause

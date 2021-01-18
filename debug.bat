@@ -1,0 +1,1 @@
+adb shell /data/local/tmp/gdbserver :5039 /data/local/tmp/minitouch

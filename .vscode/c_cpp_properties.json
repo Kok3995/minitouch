@@ -6,7 +6,8 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/jni/minitouch/**",
                 "${workspaceFolder}/jni/vendor/libevdev/source/libevdev/**",
-                "C:/cygwin64/**"
+                "C:/cygwin64/**",
+                "C:/Users/${env:USERNAME}/AppData/Local/Android/Sdk/ndk/19.2.5345600/platforms/android-19/arch-arm/usr/lib"
             ],
             "defines": [],
             "cStandard": "c11",
