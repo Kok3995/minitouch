@@ -12,6 +12,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 #include <netinet/in.h> 
+#include <signal.h>
 
 #include <libevdev.h>
 #include "fb.c"
@@ -778,6 +779,7 @@ int connect_android_service() {
 
 int main(int argc, char* argv[])
 {
+  signal(SIGHUP,SIG_IGN);
   const char* pname = argv[0];
   const char* devroot = "/dev/input";
   char* device = NULL;
